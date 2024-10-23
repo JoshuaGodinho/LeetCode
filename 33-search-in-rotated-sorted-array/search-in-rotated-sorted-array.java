@@ -4,7 +4,7 @@ class Solution {
         int right = nums.length - 1;
         
         while (left <= right) {
-            int mid = (left + right) / 2; // Calculate the middle index
+            int mid = left+ (right-left) / 2; // Calculate the middle index
             
             if (nums[mid] == target) {
                 return mid; // Return the index if the target is found
