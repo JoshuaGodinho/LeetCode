@@ -1,62 +1,41 @@
+import java.util.HashSet;
+
 class Solution {
     public boolean isValidSudoku(char[][] board) {
-        HashSet<Character> set=new HashSet<>();
-        //row check
-        for(int i=0;i<9;i++){
-            set.clear();
-            for(int j=0;j<9;j++){
-                char current=board[i][j];
-                if(current=='.')
-                    continue;
-                if(set.contains(current))
-                    return false;
-                else
-                    set.add(current);
-            }
-        }
-        System.out.println("Row check complete");
-
-        //col check
-        for(int i=0;i<9;i++){
-            set.clear();
-            for(int j=0;j<9;j++){
-                char current=board[j][i];
-                if(current=='.')
-                    continue;
-                if(set.contains(current))
-                    return false;
-                else
-                    set.add(current);
-            }
-        }
-        System.out.println("Col check complete");
-
-        set.clear();
-        //3*3 square check
-        int rowMin=0;
-        int rowMax=2;
-        int colMin=0;
-        int colMax=2;
-        for(int a=0;a<3;a++){
-            for(int b=0;b<3;b++){
-                for(int i=rowMin;i<=rowMax;i++){
-                    for(int j=colMin;j<=colMax;j++){
-                        char c=board[i][j];
-                        if(set.contains(c)) 
-                            return false;
-                        if(c!='.')    
-                            set.add(c);
-                    }                    
+        // Validate rows, columns, and sub-boxes
+        for (int i = 0; i < 9; i++) {
+            HashSet<Character> rowSet = new HashSet<>();
+            HashSet<Character> colSet = new HashSet<>();
+            HashSet<Character> boxSet = new HashSet<>();
+            
+            for (int j = 0; j < 9; j++) {
+                // Check rows
+                if (board[i][j] != '.') {
+                    if (rowSet.contains(board[i][j])) {
+                        return false; // Duplicate found in row
+                    }
+                    rowSet.add(board[i][j]);
                 }
-                set.clear();
-                colMin+=3;
-                colMax+=3;
+
+                // Check columns
+                if (board[j][i] != '.') {
+                    if (colSet.contains(board[j][i])) {
+                        return false; // Duplicate found in column
+                    }
+                    colSet.add(board[j][i]);
+                }
+
+                // Check 3x3 sub-boxes
+                int rowIndex = 3 * (i / 3) + j / 3; // Starting row of the sub-box
+                int colIndex = 3 * (i % 3) + j % 3; // Starting column of the sub-box
+                if (board[rowIndex][colIndex] != '.') {
+                    if (boxSet.contains(board[rowIndex][colIndex])) {
+                        return false; // Duplicate found in sub-box
+                    }
+                    boxSet.add(board[rowIndex][colIndex]);
+                }
             }
-            rowMin+=3;
-            rowMax+=3;
-            colMin=0;
-            colMax=2;
         }
-        return true;
+        return true; // If no duplicates are found, the board is valid
     }
 }
