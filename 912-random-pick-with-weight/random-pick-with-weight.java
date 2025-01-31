@@ -14,12 +14,16 @@ class Solution {
     
     public int pickIndex() {
         double target=this.totalSum*Math.random();
-        int i=0;
-        for(;i<this.prefixSums.length;i++){
-            if(target<this.prefixSums[i])
-                return i;
+        int low=0; int high=this.prefixSums.length;
+        while(low<high){
+            int mid=low+(high-low)/2;
+            if(target>this.prefixSums[mid])
+                low=mid+1;
+            else
+                high=mid;
         }
-        return i-1;
+
+        return low;
     }
 }
 
