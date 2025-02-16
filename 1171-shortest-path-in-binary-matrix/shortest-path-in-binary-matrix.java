@@ -1,53 +1,44 @@
-/*
-boundary analysis
-check for adjacent cells if they are 0
-traverese the cell using a traverse function
-maintain a Math.min to get the shortest path
-*/
+import java.util.LinkedList;
+import java.util.Queue;
 
 class Solution {
-    private static final int[][] directions=new int[][]{{-1,-1},{-1,0},{-1,1},{0,-1},{0,1},{1,-1},{1,0},{1,1}};
-    
     public int shortestPathBinaryMatrix(int[][] grid) {
-        if(grid[0][0]!=0 || grid[grid.length-1][grid[0].length-1]!=0)
-            return -1;
-        Queue<int[]> queue=new ArrayDeque<>();
-        grid[0][0]=1;
-        queue.add(new int[]{0,0});
+        int n = grid.length;
+        
+        // If start or end is blocked, return -1
+        if (grid[0][0] == 1 || grid[n - 1][n - 1] == 1) return -1;
 
-        while(!queue.isEmpty()){
-            int[] cell=queue.remove();
-            int row=cell[0];
-            int col=cell[1];
+        // Directions for 8-way movement
+        int[][] directions = {
+            {-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}
+        };
 
-            int distance=grid[row][col];
-            if(row==grid.length-1 && col==grid[0].length-1)
-                return distance;
+        // BFS queue (row, col, steps)
+        Queue<int[]> queue = new LinkedList<>();
+        queue.add(new int[]{0, 0, 1});
+        
+        // Mark start as visited
+        grid[0][0] = 1;
 
-            for(int[] neighbour:getNeighbours(row,col,grid)){
-                int neighbourRow=neighbour[0];
-                int neighbourCol=neighbour[1];
+        while (!queue.isEmpty()) {
+            int[] cell = queue.poll();
+            int row = cell[0], col = cell[1], steps = cell[2];
 
-                queue.add(new int[]{neighbourRow,neighbourCol});
-                grid[neighbourRow][neighbourCol]=distance+1;
+            // If we reached the bottom-right cell
+            if (row == n - 1 && col == n - 1) return steps;
+
+            // Explore all 8 possible directions
+            for (int[] dir : directions) {
+                int newRow = row + dir[0], newCol = col + dir[1];
+
+                // Check bounds and if the cell is unvisited (0)
+                if (newRow >= 0 && newRow < n && newCol >= 0 && newCol < n && grid[newRow][newCol] == 0) {
+                    queue.add(new int[]{newRow, newCol, steps + 1});
+                    grid[newRow][newCol] = 1; // Mark as visited
+                }
             }
         }
-
-        return -1;
-    }
-
-    private List<int[]> getNeighbours(int row, int col, int[][]grid){
-        List<int[]> neighbours=new ArrayList<>();
-        for(int i=0;i<directions.length;i++){
-            int newRow=row+directions[i][0];
-            int newCol=col+directions[i][1];
-
-            if(newRow<0 || newCol<0 || newRow>=grid.length || newCol >=grid[0].length || grid[newRow][newCol]!=0)
-                continue;
-            
-            neighbours.add(new int[]{newRow,newCol});
-        }
-
-        return neighbours;
+        
+        return -1; // No valid path found
     }
 }
