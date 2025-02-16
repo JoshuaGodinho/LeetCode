@@ -1,58 +1,51 @@
-class orange{
-    int row,col,mins;
-    public orange(int row, int col, int mins){
-        this.row=row;
-        this.col=col;
-        this .mins=mins;
-    }
-}
+import java.util.LinkedList;
+import java.util.Queue;
 
 class Solution {
     public int orangesRotting(int[][] grid) {
-        int row=grid.length;
-        int col=grid[0].length;
-        int fresh=0;
+        int rows = grid.length, cols = grid[0].length;
+        Queue<int[]> queue = new LinkedList<>();
+        int freshOranges = 0, minutes = 0;
 
-        Queue<orange> queue=new LinkedList<>();
-
-        for(int i=0;i<row;i++){
-            for(int j=0;j<col;j++){
-                if(grid[i][j]==1)
-                    fresh++;
-                else if(grid[i][j]==2){
-                    queue.add(new orange(i,j,0));
-                    grid[i][j]=0;
+        // Step 1: Add all rotten oranges to the queue & count fresh oranges
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (grid[i][j] == 2) {
+                    queue.offer(new int[]{i, j}); // Rotten orange position
+                } else if (grid[i][j] == 1) {
+                    freshOranges++; // Count fresh oranges
                 }
             }
         }
 
-        if(queue.isEmpty() && fresh==0)
-            return 0;
+        // If no fresh oranges exist, return 0
+        if (freshOranges == 0) return 0;
 
-        int maxMin=0;
-        int rowDiff[]={-1,0,0,1};
-        int colDiff[]={0,-1,1,0};
+        // Step 2: Start BFS
+        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}}; // Up, Down, Right, Left
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            boolean rottenInThisMinute = false;
 
-        while(!queue.isEmpty()){
-            orange current=queue.poll();
-            maxMin=Math.max(maxMin, current.mins);
+            for (int i = 0; i < size; i++) {
+                int[] cell = queue.poll();
+                int x = cell[0], y = cell[1];
 
-            for(int i=0;i<4;i++){
-                int adjr=current.row+rowDiff[i];
-                int adjc=current.col+colDiff[i];
+                // Spread to adjacent fresh oranges
+                for (int[] dir : directions) {
+                    int newX = x + dir[0], newY = y + dir[1];
 
-                if(adjr>=0 && adjr<row && adjc>=0 && adjc<col && grid[adjr][adjc]==1){
-                    queue.add(new orange(adjr,adjc,current.mins+1));
-                    fresh--;
-                    grid[adjr][adjc]=0;
+                    if (newX >= 0 && newX < rows && newY >= 0 && newY < cols && grid[newX][newY] == 1) {
+                        grid[newX][newY] = 2; // Rot the orange
+                        queue.offer(new int[]{newX, newY});
+                        freshOranges--; // Reduce fresh orange count
+                        rottenInThisMinute = true;
+                    }
                 }
             }
+            if (rottenInThisMinute) minutes++; // Increment time only if rot spread
         }
 
-        if(fresh>0)
-            return -1;
-        
-        return maxMin;
+        return (freshOranges == 0) ? minutes : -1; // If any fresh orange remains, return -1
     }
-    
 }
