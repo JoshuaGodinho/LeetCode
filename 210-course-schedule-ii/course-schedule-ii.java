@@ -1,48 +1,65 @@
+import java.util.*;
+
 class Solution {
+    private List<Integer>[] adjList;
+    private Stack<Integer> stack;
+    private boolean[] visited;
+    private boolean[] onStack;
+    private boolean hasCycle = false;
+
     public int[] findOrder(int numCourses, int[][] prerequisites) {
-        HashMap<Integer, List<Integer>> prereq=new HashMap<>();
-        for(int i=0;i<numCourses;i++){
-            prereq.put(i,new ArrayList<>());
-        }
-        for(int[] pre:prerequisites){
-            prereq.get(pre[0]).add(pre[1]);
-        }
+        adjList = new ArrayList[numCourses];
+        stack = new Stack<>();
+        visited = new boolean[numCourses];
+        onStack = new boolean[numCourses];
 
-        List<Integer> output=new ArrayList<>();
-        HashSet<Integer> visited=new HashSet<>();
-        HashSet<Integer> cycle=new HashSet<>();
-
-        for(int c=0;c<numCourses;c++){
-            if(!dfs(c,prereq,visited,cycle,output))
-                return new int[0];
+        // Initialize adjacency list
+        for (int i = 0; i < numCourses; i++) {
+            adjList[i] = new ArrayList<>();
         }
 
-        int[] result=new int[numCourses];
-        for(int i=0;i<numCourses;i++)
-            result[i]=output.get(i);
+        // Build graph
+        for (int[] pre : prerequisites) {
+            adjList[pre[1]].add(pre[0]); // Directed edge from pre[1] to pre[0]
+        }
 
-        return result;
-        
+        // Run DFS on all unvisited nodes
+        for (int i = 0; i < numCourses; i++) {
+            if (!visited[i]) {
+                dfs(i);
+            }
+        }
+
+        // If cycle is detected, return an empty array
+        if (hasCycle) {
+            return new int[0];
+        }
+
+        // Convert stack to result array
+        int[] order = new int[numCourses];
+        int index = 0;
+        while (!stack.isEmpty()) {
+            order[index++] = stack.pop();
+        }
+        return order;
     }
 
-    private boolean dfs(int course, HashMap<Integer, List<Integer>> prereq,HashSet<Integer> visited, HashSet<Integer> cycle, List<Integer> output ){
-        if(cycle.contains(course))
-            return false;
-        
-        if(visited.contains(course))
-            return true;
+    private void dfs(int node) {
+        if (hasCycle) return; // Stop if a cycle is already found
 
-        cycle.add(course);
+        visited[node] = true;
+        onStack[node] = true;
 
-        for(int pre:prereq.get(course)){
-            if(!dfs(pre,prereq,visited,cycle,output))
-                return false;
+        for (int neighbor : adjList[node]) {
+            if (!visited[neighbor]) {
+                dfs(neighbor);
+            } else if (onStack[neighbor]) { // If the neighbor is on the stack, cycle exists
+                hasCycle = true;
+                return;
+            }
         }
 
-        cycle.remove(course);
-        visited.add(course);
-        output.add(course);
-
-        return true;
+        onStack[node] = false; // Remove from recursion stack
+        stack.push(node); // Add to topological order
     }
 }
