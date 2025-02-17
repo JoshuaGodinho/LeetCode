@@ -1,36 +1,48 @@
+import java.util.*;
+
 class Solution {
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        int[] indegree=new int[numCourses];
-        List<List<Integer>> adj=new ArrayList<>(numCourses);
+        // Step 1: Create adjacency list and in-degree array
+        List<List<Integer>> adjList = new ArrayList<>();
+        int[] inDegree = new int[numCourses];
 
-        for(int i=0;i<numCourses;i++)
-            adj.add(new ArrayList<>());
-
-        for(int[] prerequisite: prerequisites){
-            adj.get(prerequisite[1]).add(prerequisite[0]);
-            indegree[prerequisite[0]]++;
+        // Initialize adjacency list
+        for (int i = 0; i < numCourses; i++) {
+            adjList.add(new ArrayList<>());
         }
 
-        Queue<Integer> queue=new LinkedList<>();
-
-        for(int i=0;i<numCourses;i++){
-            if(indegree[i]==0)
-                queue.offer(i);
+        // Step 2: Build the graph and update in-degrees
+        for (int[] pre : prerequisites) {
+            int course = pre[0];
+            int prereq = pre[1];
+            adjList.get(prereq).add(course);
+            inDegree[course]++;
         }
 
-        int nodeVisited=0;
-
-        while(!queue.isEmpty()){
-            int node=queue.poll();
-            nodeVisited++;
-
-            for(int neighbour:adj.get(node)){
-                indegree[neighbour]--;
-                if(indegree[neighbour]==0)
-                    queue.offer(neighbour);
+        // Step 3: Use a queue for BFS (add courses with in-degree 0)
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < numCourses; i++) {
+            if (inDegree[i] == 0) {
+                queue.add(i);
             }
         }
 
-        return nodeVisited==numCourses;
+        // Step 4: Process the courses
+        int processedCourses = 0;
+        while (!queue.isEmpty()) {
+            int course = queue.poll();
+            processedCourses++;
+
+            // Reduce the in-degree of neighboring courses
+            for (int neighbor : adjList.get(course)) {
+                inDegree[neighbor]--;
+                if (inDegree[neighbor] == 0) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        // Step 5: If all courses are processed, return true, otherwise false
+        return processedCourses == numCourses;
     }
 }
