@@ -5,33 +5,29 @@ class Solution {
             return 0;
 
         int m=grid[0].length;
-        List<int[]> values=new ArrayList<>();
+        PriorityQueue<int[]> values = new PriorityQueue<>((a, b) -> b[0] - a[0]);
+
         for(int i=0;i<n;i++){
             for(int j=0;j<m;j++){
                 values.add(new int[]{grid[i][j],i});
             }
         }
 
-        values.sort((a,b)->Integer.compare(b[0],a[0]));
-
         int[] rowCount=new int[n];
-        int picked=0;
         long totalSum=0;
 
-        for(int[] pair:values){
-            int val=pair[0];
-            int row=pair[1];
+        while(k>0 && !values.isEmpty()){
+            int[] value=values.poll();
+            int val=value[0];
+            int row=value[1];
 
-            if(rowCount[row]<limits[row] && picked<k){
+            if(rowCount[row]<limits[row]){
                 totalSum+=val;
-                picked++;
                 rowCount[row]++;
+                k--;
             }
-
-            if(picked==k)
-                break;
         }
-
+        
         return totalSum;
     }
 }
