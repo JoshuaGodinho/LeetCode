@@ -2,47 +2,27 @@ class Solution {
     public String convert(String s, int numRows) {
         if(numRows==1)  return s;
 
-        int n=s.length();
-        int sections=(int) Math.ceil(n/(2*numRows-2.0));
-
-        int numCols=sections*(numRows-1);
-
-        char[][] matrix=new char[numRows][numCols];
-        for(char[] row: matrix)
-        {
-            Arrays.fill(row,' ');
-        }
-
-        int currRow=0; int currCol=0;
-        int currStringIndex=0;
-        while(currStringIndex<n)
-        {
-            while(currRow<numRows && currStringIndex<n)
-            {
-                matrix[currRow][currCol]=s.charAt(currStringIndex);
-                currRow++;
-                currStringIndex++;
-            }
-            currCol++;
-            currRow-=2;
-            while(currRow> 0 && currCol < numCols && currStringIndex<n)
-            {
-                matrix[currRow][currCol]=s.charAt(currStringIndex);
-                currRow--;
-                currCol++;
-                currStringIndex++;
-            }
-        }
         StringBuilder sb=new StringBuilder();
-        for(char[] row:matrix)
+        int n=s.length();
+        int charsInSection=2*(numRows-1);
+
+        for(int currRow=0;currRow<numRows; currRow++)
         {
-            for(char character:row)
+            int index=currRow;
+            while(index<n)
             {
-                if(character!=' ')
-                    sb.append(character);
+                sb.append(s.charAt(index));
+                if(currRow!=0 && currRow!=numRows-1)
+                {
+                    int charsInBetween=charsInSection-2*currRow;
+                    int secondIndex=index+charsInBetween;
+
+                    if(secondIndex<n)   
+                        sb.append(s.charAt(secondIndex));
+                }
+                index+=charsInSection;
             }
         }
-
         return sb.toString();
     }
 }
