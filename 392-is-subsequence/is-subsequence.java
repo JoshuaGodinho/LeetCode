@@ -1,19 +1,38 @@
 class Solution {
     public boolean isSubsequence(String s, String t) {
-        int leftBound=s.length(); 
-        int rightBound=t.length();
-        int pLeft=0;
-        int pRight=0;
-
-        while(pLeft< leftBound && pRight<rightBound)
+        HashMap<Character, List<Integer>> letterIndicesTable=new HashMap<>();
+        for(int i=0;i<t.length();i++)
         {
-            if(s.charAt(pLeft)==t.charAt(pRight))
+            if(letterIndicesTable.containsKey(t.charAt(i)))
+                letterIndicesTable.get(t.charAt(i)).add(i);
+            else
             {
-                pLeft++;
+                ArrayList<Integer> indices=new ArrayList<>();
+                indices.add(i);
+                letterIndicesTable.put(t.charAt(i),indices);
             }
-            pRight++;
         }
 
-        return pLeft==leftBound;
+        int currMatchIndex=-1;
+        for(char letter:s.toCharArray())
+        {
+            if(!letterIndicesTable.containsKey(letter))
+                return false;
+            
+            boolean matched=false;
+            for(int matchIndex: letterIndicesTable.get(letter))
+            {
+                if(currMatchIndex<matchIndex)
+                {
+                    currMatchIndex=matchIndex;
+                    matched=true;
+                    break;
+                }
+            }
+            if(!matched)
+                return false;
+        }
+
+        return true;
     }
 }
