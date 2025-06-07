@@ -1,13 +1,17 @@
 /*
-Input: s = "pbbcggttciiippooaais", k = 2
-count of each adjacent alphabet
+Input: s = "deeedbbcccbdaa", k = 3
+ddbbcccbdaa
+ddbbbdaa
+Output: "aa"
 
+HashMap Stack.pop()
 */
 
 class Solution {
-    private static class Pair{
+    private class Pair{
         char ch;
         int count;
+
         Pair(char ch, int count){
             this.ch=ch;
             this.count=count;
@@ -22,10 +26,9 @@ class Solution {
             {
                 stack.peek().count++;
                 if(stack.peek().count==k)
-                {
                     stack.pop();
-                }
-            }else
+            }
+            else
             {
                 stack.push(new Pair(c,1));
             }
@@ -34,9 +37,9 @@ class Solution {
         StringBuilder sb=new StringBuilder();
         for(Pair p:stack)
         {
-            for (int i = 0; i < p.count; i++)
+            for(int i=0;i<p.count;i++)
             {
-                 sb.append(p.ch);
+                sb.append(p.ch);
             }
         }
 
