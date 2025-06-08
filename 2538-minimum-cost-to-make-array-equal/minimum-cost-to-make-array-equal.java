@@ -1,42 +1,38 @@
 class Solution {
     public long minCost(int[] nums, int[] cost) {
-        int minVal=Integer.MAX_VALUE;
-        int maxVal=Integer.MIN_VALUE;
-
-        for(int num:nums)
+        int n=nums.length;
+        int[][] arr=new int[n][2];
+        for(int i=0;i<n;i++)
         {
-            minVal=Math.min(minVal,num);
-            maxVal=Math.max(maxVal,num);
+            arr[i][0]=nums[i];
+            arr[i][1]=cost[i];
         }
+        Arrays.sort(arr, Comparator.comparingInt(a->a[0])); //[1,2,3,5]
 
-        long left=minVal,right=maxVal;
-
-        while(left<right)
-        {
-            long mid=left+(right-left)/2;
-
-            long costMid=getCost(nums,cost,mid);
-            long costMidPlus=getCost(nums,cost,mid+1);
-
-            if(costMid<costMidPlus)
-            {
-                right=mid;
-            }
-            else
-            {
-                left=mid+1;
-            }
-        }
-        return getCost(nums, cost,left);
-    }
-
-    private long getCost(int[] nums,int[] cost, long target)
-    {
         long totalCost=0;
-        for(int i=0;i<nums.length;i++)
+        for(int i=0;i<n;i++)
         {
-            totalCost+=(long)Math.abs((nums[i]-target)*cost[i]);
+            totalCost+=arr[i][1];//20
         }
-        return totalCost;
+
+        long prefixCost=0;
+        int median=arr[0][0];
+
+        for(int i=0;i<n;i++)
+        {
+            prefixCost+=arr[i][1];
+            if(prefixCost*2>=totalCost)
+            {
+                median=arr[i][0];
+                break;
+            }
+        }
+
+        long result = 0;
+    for (int i = 0; i < n; i++) {
+        result += (long)Math.abs(nums[i] - median) * cost[i];
+    }
+    return result;
+
     }
 }
