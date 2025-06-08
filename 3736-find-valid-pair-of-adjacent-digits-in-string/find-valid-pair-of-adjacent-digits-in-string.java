@@ -15,9 +15,7 @@ class Solution {
             char a=s.charAt(i);
             char b=s.charAt(i+1);
 
-            if(a==b)    continue;
-
-            if(freq[a-'0']==a-'0' && freq[b-'0']==b-'0')
+            if(a!=b && freq[a-'0']==a-'0' && freq[b-'0']==b-'0')
             {
                 return ""+ a + b;
             }
