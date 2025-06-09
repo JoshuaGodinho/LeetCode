@@ -10,33 +10,37 @@
  */
 class Solution {
     public ListNode mergeKLists(ListNode[] lists) {
-        if(lists==null || lists.length==0)
-            return null;
+        if(lists==null || lists.length==0)  return null;
 
-        PriorityQueue<ListNode> minHeap=new PriorityQueue<>(
-            (a,b)->a.val-b.val
-        );
-
-        for(ListNode node: lists)
+        int interval=1;
+        while(interval<lists.length)
         {
-            if(node!=null)
+            for(int i=0;i+interval<lists.length;i+=interval*2)
             {
-                minHeap.add(node);
+                lists[i]=mergeTwoLists(lists[i],lists[i+interval]);
             }
+            interval*=2;
         }
 
-        ListNode dummy=new ListNode(0);
-        ListNode current=dummy;
-
-        while(!minHeap.isEmpty())
+        return lists[0];
+    }
+    private ListNode mergeTwoLists(ListNode l1, ListNode l2) 
+    {
+    ListNode dummy = new ListNode(0), curr = dummy;
+    while (l1 != null && l2 != null) 
+    {
+        if (l1.val < l2.val) 
         {
-            ListNode node=minHeap.poll();
-            current.next=node;
-            current=current.next;
-            if(node.next!=null)
-                minHeap.add(node.next);
+            curr.next = l1;
+            l1 = l1.next;
+        } else 
+        {
+            curr.next = l2;
+            l2 = l2.next;
         }
-
-        return dummy.next;
+        curr = curr.next;
+    }
+    curr.next = (l1 != null) ? l1 : l2;
+    return dummy.next;
     }
 }
