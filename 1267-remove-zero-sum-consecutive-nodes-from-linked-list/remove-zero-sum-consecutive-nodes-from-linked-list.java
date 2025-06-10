@@ -15,17 +15,30 @@ class Solution {
 
         HashMap<Integer,ListNode> sumToNode=new HashMap<>();
         int sum=0;
+        ListNode node=dummy;
 
-        for(ListNode node=dummy;node!=null;node=node.next)
-        {
-            sum=sum+node.val;
-            sumToNode.put(sum,node);
-        }
-        sum=0;
-        for(ListNode node=dummy;node!=null;node=node.next)
+        while(node!=null)
         {
             sum+=node.val;
-            node.next=sumToNode.get(sum).next;
+            if(sumToNode.containsKey(sum))
+            {
+                ListNode prev=sumToNode.get(sum);
+                ListNode temp=prev.next;
+                int tempSum=sum;
+
+                while(temp!=node)
+                {
+                    tempSum+=temp.val;
+                    sumToNode.remove(tempSum);
+                    temp=temp.next;
+                }
+                prev.next=node.next;
+            }
+            else
+            {
+                sumToNode.put(sum,node);
+            }
+            node=node.next;
         }
         return dummy.next;
     }
